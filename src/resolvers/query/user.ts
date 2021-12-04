@@ -1,16 +1,18 @@
-import { COLLECTIONS, EXPIRETIME, MESSAGES } from './../config/constants';
+import { COLLECTIONS, EXPIRETIME, MESSAGES } from './../../config/constants';
 import { IResolvers } from 'graphql-tools';
-import JWT from '../lib/jwt';
+import JWT from './../../lib/jwt';
 import bcrypt from 'bcrypt';
+import { findElements, findOneElement } from '../../lib/db-operations';
+import { IUser } from '../../interfaces/user.interface';
 
-const resolversQuery : IResolvers = {
+const resolversUserQuery : IResolvers = {
     Query: {
         async users(_, __, { db }){
             try{
                 return {
                     status: true,
                     message: 'Lista de usuarios cargada correctamente',
-                    users: await db.collection(COLLECTIONS.USERS).find().toArray()
+                    users: await findElements(db, COLLECTIONS.USERS),
                 }; 
             }catch (error){
                 console.log(error);
@@ -21,9 +23,10 @@ const resolversQuery : IResolvers = {
                 };
             }
         },
+
         async login(_,{email, password}, { db }){
             try{
-                const user = await db.collection(COLLECTIONS.USERS).findOne({ email });
+                const user : IUser = await findOneElement(db, COLLECTIONS.USERS, {email}) as unknown as IUser;
                 if( user === null){
                     return{
                         status: false,
@@ -32,7 +35,7 @@ const resolversQuery : IResolvers = {
                     };
                 }
                 
-                const passwordCheck = bcrypt.compareSync(password, user.password);
+                const passwordCheck = bcrypt.compareSync(password, user.password!);
 
                 if(passwordCheck !== null){
                     delete user.password;
@@ -77,4 +80,4 @@ const resolversQuery : IResolvers = {
     },
 };
 
-export default resolversQuery;
+export default resolversUserQuery;

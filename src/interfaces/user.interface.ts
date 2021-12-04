@@ -1,17 +1,10 @@
-export interface Iuser{
+export interface IUser{
     id?: string;
     name: string;
     lastname: string;
     email: string;
-    password: string;
-    registerDate: string;
-    birthday: string;
+    password?: string;
+    registerDate?: string;
+    birthday?: string;
     role: string;
 }
-
-
-registerDate: String!
-"Fecha de Nacimiento"
-birthday: String!
-"Permisos del usuario"
-role: Role!

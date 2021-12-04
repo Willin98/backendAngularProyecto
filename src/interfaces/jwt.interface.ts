@@ -1,5 +1,5 @@
-import { Iuser } from './user.interface';
+import { IUser } from './user.interface';
 
 export interface IJwt{
-    user: Iuser
+    user: IUser
 }
