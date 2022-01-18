@@ -5,6 +5,7 @@ import { asignDocumentId, findOneElement } from "../lib/db-operations";
 import ResolversOperationsService from "./resolvers-operations.service";
 import bcrypt from "bcrypt";
 import JWT from "../lib/jwt";
+import MailService from "./mail.service";
 
 class UsersService extends ResolversOperationsService {
   private collection = COLLECTIONS.USERS;
@@ -15,7 +16,12 @@ class UsersService extends ResolversOperationsService {
   async items() {
     const page = this.getVariables().pagination?.page;
     const itemsPage = this.getVariables().pagination?.itemsPage;
-    const result = await this.list(this.collection, "usuarios", page, itemsPage);
+    const result = await this.list(
+      this.collection,
+      "usuarios",
+      page,
+      itemsPage
+    );
     return {
       info: result.info,
       status: result.status,
@@ -177,8 +183,9 @@ class UsersService extends ResolversOperationsService {
     };
   }
   //Bloquear el usuario
-  async block(){
+  async unblock(unblock: boolean) {
     const id = this.getVariables().id;
+    const user = this.getVariables().user;
     if (!this.checkData(String(id) || "")) {
       return {
         status: false,
@@ -186,11 +193,58 @@ class UsersService extends ResolversOperationsService {
         genre: null,
       };
     }
-    const result = await this.update(this.collection, { id }, { active: false }, "usuario");
-    return { status: result.status, 
-      message: (result.message) ? 'Bloqueado correctamente' : 'No se pudo bloquear correctamente' };
+    if (user?.password === "1234") {
+      return {
+        status: false,
+        message:
+          "En este caso no podemos activar el usuario porque no has cambiado el password 1234",
+      };
+    }
+    let update = { active: unblock };
+    if (unblock) {
+      update = Object.assign(
+        {},
+        { active: true },
+        {
+          birthday: user?.birthday,
+          password: bcrypt.hashSync(user?.password || "", 10),
+        }
+      );
+    }
+    console.log(update);
+    const result = await this.update(
+      this.collection,
+      { id },
+      update,
+      "usuario"
+    );
+    const action = unblock ? "Desbloqueado" : "Bloqueado";
+    return {
+      status: result.status,
+      message: result.message
+        ? `${action} correctamente`
+        : `No se ha ${action.toLowerCase()} correctamente`,
+    };
   }
 
+  async active() {
+    const id = this.getVariables().user?.id;
+    const email = this.getVariables().user?.email || "";
+    if (email === undefined || email === "") {
+      return {
+        status: false,
+        message: "El email no se ha definido correctamente",
+      };
+    }
+    const token = new JWT().sing({ user: { id, email } }, EXPIRETIME.H1);
+    const html = `Para activar la cuenta haz sobre esto: <a href="${process.env.CLIENT_URL}/#/active/${token}">Clic aqui</a>`;
+    const mail = {
+      subject: "Activar usuario",
+      to: email,
+      html,
+    };
+    return new MailService().send(mail);
+  }
   private checkData(value: string) {
     return value === "" || value === undefined ? false : true;
   }
