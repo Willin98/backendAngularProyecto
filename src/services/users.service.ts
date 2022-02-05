@@ -15,7 +15,6 @@ class UsersService extends ResolversOperationsService {
   }
   //Lista de usuarios
   async items(active: string = ACTIVE_VALUES_FILTER.ACTIVE) {
-    console.log('service', active);
     let filter: object = { active: {$ne: false}}; 
     if(active === ACTIVE_VALUES_FILTER.ALL){
       filter = {};

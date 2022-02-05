@@ -8,7 +8,10 @@ export const SECRET_KEY = process.env.SECRET || 'CineWorlConGraphQl';
 
 export enum COLLECTIONS {
     USERS = 'users',
-    GENRES = 'genres' 
+    GENRES = 'genres',
+    SHOP_FILM = 'cartelera',
+    FILMS = 'films',
+    PLATFORMS = 'platforms'
 }
 
 export enum MESSAGES{

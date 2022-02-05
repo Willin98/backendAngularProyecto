@@ -1,0 +1,15 @@
+type Query {
+  "Lista de peliculas en cartelera"
+  shopFilms(
+    page: Int = 1,
+    itemsPage: Int = 20,
+    active: ActiveFilterEnum = ACTIVE
+  ): ResultShopFilm
+  shopFilmsPlatforms(
+    page: Int = 1,
+    itemsPage: Int = 20,
+    active: ActiveFilterEnum = ACTIVE,
+    "Especificar el id de la plataforma seleccionada"
+    platform: ID!
+  ): ResultShopFilm
+}
