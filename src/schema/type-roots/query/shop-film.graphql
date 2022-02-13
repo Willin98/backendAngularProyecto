@@ -12,4 +12,6 @@ type Query {
     "Especificar el id de la plataforma seleccionada"
     platform: ID!
   ): ResultShopFilm
+  "Detalles del producto seleccionado"
+  shopFilmDetails (id: String!): ResultShopFilm
 }

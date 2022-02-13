@@ -33,6 +33,15 @@ class ShopFilmsService extends ResolversOperationsService {
       shopFilms: result.items,
     };
   }
+
+  async details() {
+    const result = await this.get(this.collection);
+    return {
+      status: result.status,
+      message: result.message,
+      shopFilm: result.item,
+    };
+  }
 }
 
 export default ShopFilmsService;

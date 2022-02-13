@@ -8,4 +8,5 @@ type ShopFilm {
     stock: Int!
     price: Float!
     active: Boolean!
+    relationalFilms: [ShopFilm]
 }

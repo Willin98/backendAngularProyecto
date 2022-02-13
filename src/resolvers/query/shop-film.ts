@@ -17,6 +17,15 @@ const resolversShopFilmQuery: IResolvers = {
         context
       ).items(active, platform);
     },
+    shopFilmDetails(_, { id }, context){
+      return new ShopFilmsService(
+        _,
+        { 
+          id,
+        },
+        context
+      ).details();
+    }
   },
 };
 
